@@ -30,12 +30,16 @@ def removing_missing_values(df):
     df["Handset Type"] = df["Handset Type"].fillna(value='undefined')
     df["Last Location Name"] = df["Last Location Name"].fillna(value='undefined')
     df = df.fillna(value=0)
-    print(df)
+    # print(df)
+    return df
 
-
+    # sns.countplot(df["Last Location Name"])
+    # plt.show()
 
 
 if __name__ == "__main__":
     all_data = pd.read_excel("teleco_excel_file.xlsx")
     fd = pd.DataFrame(all_data)
     removing_missing_values(fd)
+
+
