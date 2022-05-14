@@ -1,0 +1,7 @@
+MANIFEST.in
+README.md
+setup.py
+Rehmet.egg-info/PKG-INFO
+Rehmet.egg-info/SOURCES.txt
+Rehmet.egg-info/dependency_links.txt
+Rehmet.egg-info/top_level.txt

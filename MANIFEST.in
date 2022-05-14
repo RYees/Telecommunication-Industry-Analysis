@@ -1,0 +1,4 @@
+include requirements.txt
+recursive-include data/teleco_excel_file.xlsx
+recursive-include notebooks/clean_excel_file.ipynb
+recursive-include scripts/clean_dataframe.py
