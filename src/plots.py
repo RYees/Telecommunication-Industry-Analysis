@@ -1,30 +1,103 @@
-CREATE TABLE telecom.telecom (
-       BearerId varchar, Start_time varchar, Start_ms varchar, End_time varchar, End_ms varchar, Dur_ms varchar, IMSI varchar,
-       MSISDN_number varchar, IMEI varchar, LastLocationName varchar, AvgRTTDL_ms varchar,
-       AvgRTTUL_ms varchar, AvgBearerTPDL_kbps varchar, AvgBearerTPUL_kbps varchar,
-       TCPDLRetransVol_Bytes varchar, TCPULRetransVol_Bytes varchar,
-       DLTPless50Kbps varchar, 50KbpslessDLTPless250Kbps varchar,
-       250Kbps<DLTP<1Mbps(%) varchar, DLTP>1Mbps(%) varchar,
-       ULTP<10Kbps(%) varchar, 10Kbps<ULTP<50Kbps(%) varchar,
-       50Kbps<ULTP<300Kbps(%) varchar, ULTP>300Kbps(%) varchar,
-       HTTPDL(Bytes) varchar, HTTPUL(Bytes) varchar, ActivityDurationDL(ms) varchar,
-       ActivityDurationUL(ms) varchar, Dur(ms)1 varchar, HandsetManufacturer varchar,
-       HandsetType varchar, Nbofsecwith125000B<VolDL varchar,
-       Nbofsecwith1250B<VolUL<6250B varchar,
-       Nbofsecwith31250B<VolDL<125000B varchar,
-       Nbofsecwith37500B<VolUL varchar,
-       Nbofsecwith6250B<VolDL<31250B varchar,
-       Nbofsecwith6250B<VolUL<37500B varchar,
-       NbofsecwithVolDL<6250B varchar, NbofsecwithVolUL<1250B varchar,
-       SocialMediaDL(Bytes) varchar, SocialMediaUL(Bytes) varchar,
-       GoogleDL(Bytes) varchar, GoogleUL(Bytes) varchar, EmailDL(Bytes) varchar,
-       EmailUL(Bytes) varchar, YoutubeDL(Bytes) varchar, YoutubeUL(Bytes) varchar,
-       NetflixDL(Bytes) varchar, NetflixUL(Bytes) varchar, GamingDL(Bytes) varchar,
-       GamingUL(Bytes) varchar, OtherDL(Bytes) varchar, OtherUL(Bytes) varchar,
-       TotalUL(Bytes) varchar, TotalDL(Bytes) varchar
-);
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.pylab as plts
+import seaborn as sns
 
 
-COPY telecom.customers (first_name, last_name, email, phone_number)
-FROM 'C:\Users\YourUsername\Downloads\telecom.csv'
-DELIMITER ',' CSV HEADER;
+def fix_outlier(df, column):
+    df[column] = np.where(df[column] > df[column].quantile(0.95), df[column].median(),df[column])    
+    return df[column]
+
+################ Plot Functions ########################
+def plot_hist(df:pd.DataFrame, column:str, color:str)->None:
+    # plt.figure(figsize=(15, 10))
+    # fig, ax = plt.subplots(1, figsize=(12, 7))
+    sns.displot(data=df, x=column, color=color, kde=True, height=7, aspect=2)
+    plt.title(f'Distribution of {column}', size=20, fontweight='bold')
+    plt.show()
+    
+def plot_count(df:pd.DataFrame, column:str) -> None:
+    plt.figure(figsize=(12, 7))
+    sns.countplot(data=df, x=column)
+    plt.title(f'Distribution of {column}', size=20, fontweight='bold')
+    plt.show()
+    
+def plot_bar(df:pd.DataFrame, x_col:str, y_col:str, title:str, xlabel:str, ylabel:str)->None:
+    plt.figure(figsize=(12, 7))
+    sns.barplot(data = df, x=x_col, y=y_col)
+    plt.title(title, size=20)
+    plt.xticks(rotation=75, fontsize=14)
+    plt.yticks( fontsize=14)
+    plt.xlabel(xlabel, fontsize=16)
+    plt.ylabel(ylabel, fontsize=16)
+    plt.show()
+
+def plot_heatmap(df:pd.DataFrame, title:str, cbar=False)->None:
+    plt.figure(figsize=(12, 7))
+    sns.heatmap(df, annot=True, cmap='viridis', vmin=0, vmax=1, fmt='.2f', linewidths=.7, cbar=cbar )
+    plt.title(title, size=18, fontweight='bold')
+    plt.show()
+
+def plot_box(df:pd.DataFrame, x_col:str, title:str) -> None:
+    plt.figure(figsize=(12, 7))
+    sns.boxplot(data = df, x=x_col,showfliers = False)
+    plt.title(title, size=20)
+    plt.xticks(rotation=75, fontsize=14)
+    plt.show()
+
+def plot_box_multi(df:pd.DataFrame, x_col:str, y_col:str, title:str) -> None:
+    plt.figure(figsize=(12, 7))
+    sns.boxplot(data = df, x=x_col, y=y_col)
+    plt.title(title, size=20)
+    plt.xticks(rotation=75, fontsize=14)
+    plt.yticks( fontsize=14)
+    plt.show()
+
+def plot_scatter(df: pd.DataFrame, x_col: str, y_col: str, title: str) -> None:
+    plt.figure(figsize=(12, 7))
+    sns.scatterplot(data = df, x=x_col, y=y_col)
+    plt.title(title, size=20)
+    plt.xticks(fontsize=14)
+    plt.yticks( fontsize=14)
+    plt.show()
+
+def plot_scat(df: pd.DataFrame, x_col: str, y_col: str, title: str, hue: str, style: str) -> None:
+    plt.figure(figsize=(12, 7))
+    sns.scatterplot(data = df, x=x_col, y=y_col, hue=hue, style=style)
+    plt.title(title, size=20)
+    plt.xticks(fontsize=14)
+    plt.yticks( fontsize=14)
+    plt.show()
+
+def kmeans_plot(df: pd.DataFrame) -> None:
+    # Plot the k-means clusters
+    plt.scatter(df['Normalized Session Duration'], df['Normalized Sessions Total Traffic'], c=df['Engagement Group'])
+    plt.xlabel('Normalized Session Duration')
+    plt.ylabel('Normalized Sessions Total Traffic')
+    plt.title('K-means Clustering of Customer Engagement')
+
+    # Add color legend
+    # legend_elements = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='blue', markersize=10, label='Group 0'),
+    #                 plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='green', markersize=10, label='Group 1'),
+    #                 plt.Line2D([0], [0], marker='o', color='w', markerfacecolor='red', markersize=10, label='Group 2')]
+    # plt.legend()
+
+    plt.show()
+
+def kmeans_minmaxavgclustering(df: pd.DataFrame, cluster_metrics) -> None:
+    # Plot the clusters
+    plt.scatter(df['Session Duration'], df['Sessions Total Traffic'], c=df['Engagement Group'])
+    plt.xlabel('Session Duration')
+    plt.ylabel('Sessions Total Traffic')
+    plt.title('Clustering of Customer Engagement')
+
+    # Display the cluster metrics
+    for i, row in cluster_metrics.iterrows():
+        plt.text(row[('Session Duration', 'mean')],
+                row[('Sessions Total Traffic', 'mean')],
+                f'Cluster {i}\nMin: {row[("Session Duration", "min")]:.2f}\nMax: {row[("Session Duration", "max")]:.2f}\n'
+                f'Avg: {row[("Session Duration", "mean")]:.2f}\nSum: {row[("Session Duration", "sum")]:.2f}',
+                ha='center', va='center', bbox=dict(facecolor='white', edgecolor='black'))
+
+    plt.show()
