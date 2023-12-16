@@ -70,11 +70,11 @@ def plot_scat(df: pd.DataFrame, x_col: str, y_col: str, title: str, hue: str, st
     plt.yticks( fontsize=14)
     plt.show()
 
-def kmeans_plot(df: pd.DataFrame) -> None:
+def kmeans_plot(df: pd.DataFrame, colone, coltwo, colthree) -> None:
     # Plot the k-means clusters
-    plt.scatter(df['Normalized Session Duration'], df['Normalized Sessions Total Traffic'], c=df['Engagement Group'])
-    plt.xlabel('Normalized Session Duration')
-    plt.ylabel('Normalized Sessions Total Traffic')
+    plt.scatter(df[colone], df[coltwo], c=df[colthree])
+    plt.xlabel(colone)
+    plt.ylabel(coltwo)
     plt.title('K-means Clustering of Customer Engagement')
 
     # Add color legend
@@ -85,19 +85,37 @@ def kmeans_plot(df: pd.DataFrame) -> None:
 
     plt.show()
 
-def kmeans_minmaxavgclustering(df: pd.DataFrame, cluster_metrics) -> None:
+def kmeans_minmaxavgclustering(df: pd.DataFrame, colone, coltwo, colthree, cluster_metrics) -> None:
     # Plot the clusters
-    plt.scatter(df['Session Duration'], df['Sessions Total Traffic'], c=df['Engagement Group'])
-    plt.xlabel('Session Duration')
-    plt.ylabel('Sessions Total Traffic')
+    plt.scatter(df[colone], df[coltwo], c=df[colthree])
+    plt.xlabel(colone)
+    plt.ylabel(coltwo)
     plt.title('Clustering of Customer Engagement')
-
     # Display the cluster metrics
     for i, row in cluster_metrics.iterrows():
-        plt.text(row[('Session Duration', 'mean')],
-                row[('Sessions Total Traffic', 'mean')],
-                f'Cluster {i}\nMin: {row[("Session Duration", "min")]:.2f}\nMax: {row[("Session Duration", "max")]:.2f}\n'
-                f'Avg: {row[("Session Duration", "mean")]:.2f}\nSum: {row[("Session Duration", "sum")]:.2f}',
+        plt.text(row[(colone, 'mean')],
+                row[(coltwo, 'mean')],
+                f'Cluster {i}\nMin: {row[(colone, "min")]:.2f}\nMax: {row[(colone, "max")]:.2f}\n'
+                f'Avg: {row[(colone, "mean")]:.2f}\nSum: {row[(colone, "sum")]:.2f}',
                 ha='center', va='center', bbox=dict(facecolor='white', edgecolor='black'))
+    plt.show()
+
+def kmeans_plot_heat_experiment(df: pd.DataFrame, colone, coltwo, colthree, colfour) -> None:
+    fig = plt.figure(figsize=(10, 7))
+    ax = fig.add_subplot(111, projection='3d')
+
+    scatter = ax.scatter(df[colone], 
+                        df[coltwo], 
+                        df[colthree], 
+                        c=df[colfour], 
+                        cmap='viridis')
+
+    ax.set_title('Kmeans clustering')
+    ax.set_xlabel(colone)
+    ax.set_ylabel(coltwo)
+    ax.set_zlabel(colthree)
+
+    cbar = plt.colorbar(scatter)
+    cbar.set_label('Cluster')
 
     plt.show()
