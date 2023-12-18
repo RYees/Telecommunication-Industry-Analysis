@@ -6,9 +6,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import pandas as pd
 
-def db_connection_psycopg():
+def db_connection_psycopg():    
+    # database connection using psycopg2
     try:
-        # database connection using psycopg2
         pgconn = ps.connect(dbname="telecom",
                         user= "postgres",
                         password= "123",
@@ -36,7 +36,7 @@ def db_connection_sqlalchemy():
             return f'Error: {str(e)}'
     
 
-def db_create_table(engine, tablename) -> None:
+def db_create_table_sqlalchemy(engine, tablename) -> None:
     try:
         meta = MetaData()
         TableCreation = Table(
@@ -47,10 +47,10 @@ def db_create_table(engine, tablename) -> None:
         return f'Error: {str(e)}'
     
 
-def db_table_insert_dataframe(df, tablename, engine):
+def db_table_insert_dataframe_sqlalchemy(df, tablename, engine) -> None:
     try:
         df.to_sql(tablename, engine, if_exists='replace', index=False)
-        return 'Successful'
+        return 'Successfully Added'
     except Exception as e:
         return f'Error: {str(e)}'
     
